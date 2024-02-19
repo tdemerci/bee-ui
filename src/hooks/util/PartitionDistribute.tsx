@@ -51,7 +51,6 @@ function PartitionDistribute({
 
   const onClickedButtonOpen = () => {
     setGetMessageEnabled(true);
-    // refetch();
     onOpen();
   };
 
@@ -70,11 +69,9 @@ function PartitionDistribute({
       {
         onSuccess: () => {
           refetch();
-          //   setGetMessageEnabled(true);
         },
       }
     );
-    refetch();
   };
 
   const onClickedButtonDelete = () => {
@@ -82,6 +79,7 @@ function PartitionDistribute({
       topic: TopicName,
       partition: Partition.toString(),
     });
+    setGetMessageEnabled(false);
     onClose();
   };
 
