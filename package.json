@@ -37,7 +37,7 @@
     }
   },
   "devDependencies": {
-    "@craco/craco": "^7.0.0",
+    "@craco/craco": "^7.1.0",
     "@types/react-datepicker": "^4.11.2",
     "@types/uuid": "^9.0.1",
     "env-cmd": "^10.1.0",

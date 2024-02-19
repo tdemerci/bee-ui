@@ -25,6 +25,7 @@ import {
 import { RefreshButton } from 'components/RefreshButton';
 
 import { useConsumerGroupByTopicQuery } from 'hooks/services/useConsumerGroupByTopicQuery';
+import PartitionDistribute from 'hooks/util/PartitionDistribute';
 import SingleMessage from 'hooks/util/SingleMessage';
 
 export const TopicDetailConsumer = ({ topic_name }: any) => {
@@ -79,7 +80,7 @@ export const TopicDetailConsumer = ({ topic_name }: any) => {
                     size="md"
                     variant="solid"
                     colorScheme={item['total_lag'] > 0 ? 'red' : 'green'}>
-                    lag: {item['total_lag']}
+                    lag: {item['total_lag'].toLocaleString('en-US')}
                   </Tag>
                   <Button
                     style={{ marginLeft: 'auto' }}
@@ -102,6 +103,9 @@ export const TopicDetailConsumer = ({ topic_name }: any) => {
                           <Th>Topic Offset</Th>
                           <Th>Group Offset</Th>
                           <Th>Lag</Th>
+                          <Th width="100%" textAlign="right">
+                            Spread
+                          </Th>
                           <Th width="100%" textAlign="right">
                             Detail
                           </Th>
@@ -144,6 +148,18 @@ export const TopicDetailConsumer = ({ topic_name }: any) => {
                                     {partition['lag'].toLocaleString('en-US')}
                                   </Tag>
                                 </Td>
+                                {partition['lag'] > 100 ? (
+                                  <Td textAlign="right">
+                                    <PartitionDistribute
+                                      TopicName={topic_name}
+                                      Partition={partition['partition']}
+                                      GroupId={
+                                        item['group_id']
+                                      }></PartitionDistribute>
+                                  </Td>
+                                ) : (
+                                  <Td> </Td>
+                                )}
                                 {partition['lag'] > 0 ? (
                                   <Td textAlign="right">
                                     <SingleMessage

@@ -41,12 +41,18 @@ export const MessageItemHeaderCollapse = (headerValue: any) => {
             return (
               <Td
                 key="0"
-                maxW="xl"
+                maxWidth="xl"
+                textAlign="start"
                 overflow="hidden"
                 whiteSpace="nowrap"
                 textOverflow="ellipsis"
                 colSpan={2}>
-                <Code>{a}</Code>
+                <Code
+                  display="inline-block"
+                  whiteSpace="break-spaces"
+                  width="100%">
+                  {a}
+                </Code>
               </Td>
             );
           })}
