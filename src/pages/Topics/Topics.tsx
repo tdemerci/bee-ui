@@ -23,7 +23,7 @@ const Topics = () => {
   const topicNameDebounce = useDebounce(topicName, 500);
   useEffect(() => {
     if (data !== undefined) {
-      var mes = [];
+      let mes = [];
       if (data?.length > 0) {
         mes = data.filter((item: any) => item.includes(topicName));
       }
@@ -34,7 +34,13 @@ const Topics = () => {
   useEffect(() => {
     if (topicNameDebounce.length >= 3) {
       if (data?.length > 0)
-        setMessages(data.filter((item: any) => item.includes(topicName)));
+        setMessages(
+          data
+            .filter((item: string) =>
+              item.toLowerCase().includes(topicName.toLowerCase())
+            )
+            .sort((a: string, b: string) => a.length - b.length)
+        );
     }
   }, [topicNameDebounce]);
 
