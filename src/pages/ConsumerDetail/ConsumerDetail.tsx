@@ -77,7 +77,7 @@ const ConsumerDetail = () => {
           />
         </Tooltip>
       </Flex>
-      <Box borderWidth="1px" borderRadius="lg" width="300px">
+      <Box borderWidth="1px" borderRadius="lg" maxW="max">
         <HStack spacing="1px" divider={<StackDivider borderColor="gray.200" />}>
           {data !== undefined && (
             <Stat p="4">
@@ -91,6 +91,28 @@ const ConsumerDetail = () => {
               <StatNumber>{data['member_count']}</StatNumber>
             </Stat>
           )}
+          {data !== undefined && (
+            <Stat p="4" minW="max">
+              <StatLabel>Protocol</StatLabel>
+              <StatNumber>{data['protocol']}</StatNumber>
+            </Stat>
+          )}
+          {data !== undefined && (
+            <Stat p="4" minW="max">
+              <StatLabel>Pod Count</StatLabel>
+              <StatNumber>{data['pod_count']}</StatNumber>
+            </Stat>
+          )}
+          {data !== undefined &&
+            data['consumer_unassigments'] !== null &&
+            data['consumer_unassigments'].length > 0 && (
+              <Stat p="4" minW="max">
+                <StatLabel>Unassigments</StatLabel>
+                <StatNumber>
+                  {data['consumer_unassigments'].join(', ')}
+                </StatNumber>
+              </Stat>
+            )}
         </HStack>
       </Box>
       <Flex className="flex-col flex-1">

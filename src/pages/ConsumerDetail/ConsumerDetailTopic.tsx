@@ -103,6 +103,7 @@ export const ConsumerDetailTopic = ({ group_id }: any) => {
                           <Th>Topic Offset</Th>
                           <Th>Group Offset</Th>
                           <Th>Lag</Th>
+                          <Th>Ip</Th>
                           <Th width="100%" textAlign="right">
                             Detail
                           </Th>
@@ -136,6 +137,15 @@ export const ConsumerDetailTopic = ({ group_id }: any) => {
                                   {partition['lag'].toLocaleString('en-US')}
                                 </Tag>
                               </Td>
+                              {partition['ip_address'] !== undefined ? (
+                                <Td>
+                                  {partition['ip_address'].toLocaleString(
+                                    'en-US'
+                                  )}
+                                </Td>
+                              ) : (
+                                <Td>-</Td>
+                              )}
                               {partition['lag'] > 0 ? (
                                 <Td textAlign="right">
                                   {true && (
