@@ -103,16 +103,6 @@ const ConsumerDetail = () => {
               <StatNumber>{data['pod_count']}</StatNumber>
             </Stat>
           )}
-          {data !== undefined &&
-            data['consumer_unassigments'] !== null &&
-            data['consumer_unassigments'].length > 0 && (
-              <Stat p="4" minW="max">
-                <StatLabel>Unassigments</StatLabel>
-                <StatNumber>
-                  {data['consumer_unassigments'].join(', ')}
-                </StatNumber>
-              </Stat>
-            )}
         </HStack>
       </Box>
       <Flex className="flex-col flex-1">

@@ -74,7 +74,10 @@ const Consumers = () => {
       </Flex>
       <Flex>
         {messages.length > 0 && (
-          <ItemPage pageItems={messages} CustomPage={ConsumerItem}></ItemPage>
+          <ItemPage
+            pageItems={messages}
+            CustomPage={ConsumerItem}
+            filterKeyword=""></ItemPage>
         )}
       </Flex>
     </Flex>

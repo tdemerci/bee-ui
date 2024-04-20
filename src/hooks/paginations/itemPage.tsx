@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+
 import { usePagination } from '@ajna/pagination';
 import { Box, ChakraProvider, Flex, Stack } from '@chakra-ui/react';
 
@@ -6,9 +8,32 @@ import { PaginationBottom } from './paginationBottom';
 interface ItemPageProps {
   pageItems: any;
   CustomPage: any;
+  filterKeyword: string;
 }
 
-function ItemPage({ pageItems, CustomPage }: ItemPageProps): JSX.Element {
+function ItemPage({
+  pageItems,
+  CustomPage,
+  filterKeyword,
+}: ItemPageProps): JSX.Element {
+  const getItems = () => {
+    let filterKeywords = filterKeyword.split(' ');
+    if (pageItems === undefined || !Array.isArray(pageItems)) return [];
+    if (!filterKeywords) return pageItems;
+
+    return pageItems
+      .filter((item: string) =>
+        filterKeywords.every((keyword: string) =>
+          item.toLowerCase().includes(keyword.toLowerCase())
+        )
+      )
+      .sort((a: string, b: string) => a.length - b.length);
+  };
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filterKeyword]);
+
   // states
   const {
     pages,
@@ -19,7 +44,7 @@ function ItemPage({ pageItems, CustomPage }: ItemPageProps): JSX.Element {
     pageSize,
     setPageSize,
   } = usePagination({
-    total: pageItems.length,
+    total: getItems().length,
     limits: {
       outer: 2,
       inner: 2,
@@ -36,15 +61,13 @@ function ItemPage({ pageItems, CustomPage }: ItemPageProps): JSX.Element {
       <ChakraProvider>
         <Box borderWidth="1px" borderRadius="lg" p="2">
           <Stack>
-            {pageItems !== undefined &&
-              Array.isArray(pageItems) &&
-              pageItems
-                .slice(offset, offset + pageSize)
-                .map((item: any, index: number) => (
-                  <CustomPage
-                    key={index + '_' + currentPage}
-                    pageItem={{ item }}></CustomPage>
-                ))}
+            {getItems()
+              .slice(offset, offset + pageSize)
+              .map((item: any, index: number) => (
+                <CustomPage
+                  key={index + '_' + currentPage}
+                  pageItem={{ item }}></CustomPage>
+              ))}
             {pagesCount > 1 && (
               <PaginationBottom
                 pages={pages}

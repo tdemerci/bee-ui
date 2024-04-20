@@ -1,6 +1,14 @@
 import { useState } from 'react';
 
-import { Flex, HStack, Select, VStack } from '@chakra-ui/react';
+import {
+  Flex,
+  HStack,
+  Input,
+  Select,
+  Text,
+  Tooltip,
+  VStack,
+} from '@chakra-ui/react';
 
 import { RefreshButton } from 'components/RefreshButton';
 
@@ -19,6 +27,13 @@ export const TopicDetailMessage = ({ topic_name, partition_count }: any) => {
   });
   const { isLoading, data, refetch, isRefetching } =
     useTopMessagesQuery(requestParam);
+
+  const [filterKeyword, setFilterKeyword] = useState('');
+  const searchFilterHandleChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setFilterKeyword(event.target.value);
+  };
 
   const onSelectChangedPartition = (
     event: React.ChangeEvent<HTMLSelectElement>
@@ -39,9 +54,9 @@ export const TopicDetailMessage = ({ topic_name, partition_count }: any) => {
       <HStack spacing="20px" mb="3" width="100%" alignItems="end">
         <Flex>
           <VStack spacing="0px">
-            <Flex fontStyle="bold" fontSize="2xs" alignSelf="baseline">
+            <Text as="b" fontSize="2xs" alignSelf="baseline" color="gray.500">
               PARTITION
-            </Flex>
+            </Text>
             <Select fontSize="sm" onChange={onSelectChangedPartition}>
               {(() => {
                 const options = [];
@@ -64,9 +79,9 @@ export const TopicDetailMessage = ({ topic_name, partition_count }: any) => {
         </Flex>
         <Flex>
           <VStack spacing="0px">
-            <Flex fontStyle="bold" fontSize="2xs" alignSelf="baseline">
+            <Text as="b" fontSize="2xs" color="gray.500" alignSelf="baseline">
               SIZE
-            </Flex>
+            </Text>
             <Select fontSize="sm" onChange={onSelectChangedSize}>
               <option value="10">10</option>
               <option value="50">50</option>
@@ -80,10 +95,32 @@ export const TopicDetailMessage = ({ topic_name, partition_count }: any) => {
             isLoading={isLoading || isRefetching}
             onButtonClicked={onButtonClickedRefresh}></RefreshButton>
         </Flex>
+        <VStack
+          spacing="0px"
+          direction="column"
+          style={{ marginLeft: 'auto' }}
+          alignItems="end"
+          justifyContent="center">
+          <Tooltip
+            hasArrow
+            label="Keyword filters only fetched events."
+            placement="left-end">
+            <Text as="b" fontSize="2xs" color="gray.500" alignSelf="baseline">
+              FILTER
+            </Text>
+          </Tooltip>
+          <Input
+            borderRadius="md"
+            style={{ width: '200px' }}
+            value={filterKeyword}
+            onChange={searchFilterHandleChange}
+          />
+        </VStack>
       </HStack>
       {data !== undefined && Array.isArray(data) && (
         <MessageItemPage
           pageItems={data}
+          filterKeyword={filterKeyword}
           MessageItem={MessageItem}
           messageItemProps={{
             topicName: topic_name,

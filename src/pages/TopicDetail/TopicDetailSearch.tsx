@@ -219,6 +219,7 @@ export const TopicDetailSearch = ({ topicName }: any) => {
         data['data'].length > 0 && (
           <MessageItemPage
             pageItems={data['data']}
+            filterKeyword=""
             MessageItem={MessageItem}
             messageItemProps={{
               topicName: topicName,

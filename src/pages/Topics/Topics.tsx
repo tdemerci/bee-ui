@@ -33,14 +33,7 @@ const Topics = () => {
 
   useEffect(() => {
     if (topicNameDebounce.length >= 3) {
-      if (data?.length > 0)
-        setMessages(
-          data
-            .filter((item: string) =>
-              item.toLowerCase().includes(topicName.toLowerCase())
-            )
-            .sort((a: string, b: string) => a.length - b.length)
-        );
+      if (data?.length > 0) setMessages(data);
     }
   }, [topicNameDebounce]);
 
@@ -79,7 +72,11 @@ const Topics = () => {
       </Flex>
       <Flex>
         {messages.length > 0 && (
-          <ItemPage pageItems={messages} CustomPage={TopicItem} />
+          <ItemPage
+            pageItems={messages}
+            CustomPage={TopicItem}
+            filterKeyword={topicName}
+          />
         )}
       </Flex>
     </Flex>

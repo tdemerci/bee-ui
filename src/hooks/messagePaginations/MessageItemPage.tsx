@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+
 import { usePagination } from '@ajna/pagination';
 import { HamburgerIcon } from '@chakra-ui/icons';
 import {
@@ -17,16 +19,32 @@ import { MessageItemProps } from './MessageItem';
 
 interface ItemPageProps {
   pageItems: any[];
+  filterKeyword: string;
   MessageItem: React.FC<MessageItemProps>;
   messageItemProps: Omit<MessageItemProps, 'message'>;
 }
 
 function MessageItemPage({
   pageItems,
+  filterKeyword,
   MessageItem,
   messageItemProps,
 }: ItemPageProps): JSX.Element {
-  // states
+  const getItems = () => {
+    if (pageItems === undefined || !Array.isArray(pageItems)) return [];
+    if (!filterKeyword) return pageItems;
+
+    return pageItems.filter(
+      (item: any) =>
+        JSON.stringify(item['value']).includes(filterKeyword) ||
+        item['key']?.includes(filterKeyword)
+    );
+  };
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filterKeyword]);
+
   const {
     pages,
     pagesCount,
@@ -36,7 +54,7 @@ function MessageItemPage({
     pageSize,
     setPageSize,
   } = usePagination({
-    total: pageItems.length,
+    total: getItems().length,
     limits: {
       outer: 2,
       inner: 2,
@@ -64,16 +82,14 @@ function MessageItemPage({
               </Tr>
             </Thead>
             <Tbody>
-              {pageItems !== undefined &&
-                Array.isArray(pageItems) &&
-                pageItems
-                  .slice(offset, offset + pageSize)
-                  .map((item: any) => (
-                    <MessageItem
-                      {...messageItemProps}
-                      key={`${item['offset']}-${item['partition']}`}
-                      message={item}></MessageItem>
-                  ))}
+              {getItems()
+                .slice(offset, offset + pageSize)
+                .map((item: any) => (
+                  <MessageItem
+                    {...messageItemProps}
+                    key={`${item['offset']}-${item['partition']}`}
+                    message={item}></MessageItem>
+                ))}
             </Tbody>
           </Table>
         </TableContainer>
