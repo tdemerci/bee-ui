@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import {
@@ -29,6 +29,7 @@ import {
   useDisclosure,
   useToast,
   VStack,
+  Checkbox,
 } from '@chakra-ui/react';
 
 import { useChangeOffsetMutation } from 'hooks/services/useChangeOffsetMutation';
@@ -49,6 +50,8 @@ const Offset = () => {
     useSimulationChangeOffsetQuery(parameters);
   const cancelRef = React.useRef(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const [selectedPartitions, setSelectedPartitions] = useState<number[]>([]);
 
   const handleChange =
     (key: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -77,37 +80,67 @@ const Offset = () => {
 
   const onClickedButtonOk = () => {
     console.log(parameters);
-    mutate(parameters, {
-      onSuccess: () => {
-        toast({
-          title: 'Offset updated',
-          description: (
-            <Link>
-              <Flex as="u" onClick={onClickedButtonShowConsumerGroupPage}>
-                Show consumer group page
-              </Flex>
-            </Link>
-          ),
-          status: 'success',
-          duration: 3000,
-          position: 'top-right',
-          isClosable: true,
-        });
-      },
-      onError(error, variables, context) {
-        toast({
-          title: 'Error',
-          description: error instanceof Error && error.message,
-          status: 'error',
-          duration: 3000,
-          position: 'top-right',
-          isClosable: true,
-        });
-      },
-    });
+    mutate(
+      { ...parameters, partitions_to_update: selectedPartitions },
+      {
+        onSuccess: () => {
+          toast({
+            title: 'Offset updated',
+            description: (
+              <Link>
+                <Flex as="u" onClick={onClickedButtonShowConsumerGroupPage}>
+                  Show consumer group page
+                </Flex>
+              </Link>
+            ),
+            status: 'success',
+            duration: 3000,
+            position: 'top-right',
+            isClosable: true,
+          });
+        },
+        onError(error, variables, context) {
+          toast({
+            title: 'Error',
+            description: error instanceof Error && error.message,
+            status: 'error',
+            duration: 3000,
+            position: 'top-right',
+            isClosable: true,
+          });
+        },
+      }
+    );
 
     onClose();
   };
+
+  const handlePartitionCheckboxChange = (partitionId: number) => {
+    setSelectedPartitions((prevSelected) =>
+      prevSelected.includes(partitionId)
+        ? prevSelected.filter((id) => id !== partitionId)
+        : [...prevSelected, partitionId]
+    );
+  };
+
+  const handleSelectAllChange = () => {
+    if (selectedPartitions.length === data?.partitions.length) {
+      setSelectedPartitions([]);
+    } else {
+      setSelectedPartitions(
+        data?.partitions.map((partition: any) => partition.id) || []
+      );
+    }
+  };
+
+  const totalChanges =
+    data?.partitions
+      ?.filter((partition: any) => selectedPartitions.includes(partition.id))
+      .reduce(
+        (sum: number, partition: any) =>
+          sum + partition.new_lag - partition.exist_lag,
+        0
+      ) || 0;
 
   return (
     <Flex className="flex-col gap-8">
@@ -188,6 +221,15 @@ const Offset = () => {
                 <Table size="sm">
                   <Thead>
                     <Tr>
+                      <Th>
+                        <Checkbox
+                          isChecked={
+                            selectedPartitions.length ===
+                            data?.partitions.length
+                          }
+                          onChange={handleSelectAllChange}
+                        />
+                      </Th>
                       <Th>Partition Id</Th>
                       <Th>Topic Offset</Th>
                       <Th>Exist Offset</Th>
@@ -202,6 +244,14 @@ const Offset = () => {
                         .sort((a: any, b: any) => a['id'] - b['id'])
                         .map((item: any, index: number) => (
                           <Tr key={index}>
+                            <Td>
+                              <Checkbox
+                                isChecked={selectedPartitions.includes(item.id)}
+                                onChange={() =>
+                                  handlePartitionCheckboxChange(item.id)
+                                }
+                              />
+                            </Td>
                             <Td>{item.id}</Td>
                             <Td>{item.topic_offset}</Td>
                             <Td fontStyle="bold" color="red">
@@ -219,7 +269,7 @@ const Offset = () => {
                     <TableCaption>
                       Total Changes:{' '}
                       <Tag size="md" variant="solid" colorScheme="green">
-                        {data.change.toLocaleString('en-US')}
+                        {totalChanges.toLocaleString('en-US')}
                       </Tag>
                     </TableCaption>
                   )}

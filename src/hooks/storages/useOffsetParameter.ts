@@ -6,6 +6,7 @@ export interface ChangeOffsetRequest {
   topic_name: string;
   offset_type: string;
   value: number | undefined;
+  partitions_to_update: number[];
 }
 
 interface OffsetParameter {
@@ -21,6 +22,7 @@ export const useOffsetParameter = create(
         group_id: '',
         offset_type: 'SHIFTBY',
         value: undefined,
+        partitions_to_update: [],
       },
       change: (data: ChangeOffsetRequest) => {
         set({ offsetRequest: data });
